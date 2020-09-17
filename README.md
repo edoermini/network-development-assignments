@@ -1,2 +1,2 @@
-# network-development-assignments
-Network development laboratory course assignments 
+# network-development-laboratory
+Network development laboratory course assignments and exercises 
