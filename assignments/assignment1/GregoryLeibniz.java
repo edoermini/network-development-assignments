@@ -1,29 +1,20 @@
 import java.security.InvalidParameterException;
 
 /**
- * Scrivere un programma che attiva un thread T che effettua il calcolo approssimato di pi.
- * Il programma principale riceve in input da linea di comando un parametro
- * che indica il grado di accuratezza (accuracy) per il calcolo di pi 
- * ed il tempo massimo di attesa dopo cui il programma principale interompthread T.
- * Il thread T effettua un ciclo infinito per il calcolo di pi usando la serie di 
- * Gregory-Leibniz ( pi = 4/1 – 4/3 + 4/5 - 4/7 + 4/9 - 4/11 ...).
- * 
- * Il thread esce dal ciclo quando una delle due condizioni seguenti risultaverificata:
- *  1) il thread è stato interrotto
- *  2) la  differenza tra il valore stimato di pi ed il valore Math.PI (della libreria JAVA) è minore di accuracy
+ * @author Edoardo Ermini
  */
 public class GregoryLeibniz implements Runnable {
     Double pi;
-    Float accuracy;
+    Double accuracy;
 
-    public GregoryLeibniz(float accuracy) {
+    public GregoryLeibniz(float accuracy) throws InvalidParameterException {
 
         if (accuracy < 0 || accuracy > Math.PI) {
             throw new InvalidParameterException("accuracy must be between 0 and pi");
         }
 
         this.pi = Double.valueOf(0);
-        this.accuracy = Float.valueOf(accuracy);
+        this.accuracy = Double.valueOf(accuracy);
     }
 
     public Double getPi() {
@@ -35,7 +26,10 @@ public class GregoryLeibniz implements Runnable {
         int n_iter = 0;
 
         while (!Thread.currentThread().isInterrupted() && Math.abs(this.pi-Math.PI) >= accuracy) {
-            this.pi = (double) ((n_iter % 2 == 0) ? this.pi + 4.0 / sum_factor : this.pi - 4.0 / sum_factor);
+            this.pi = (double) ((n_iter % 2 == 0)   ? 
+                this.pi + 4.0 / sum_factor          :
+                this.pi - 4.0 / sum_factor)         ;
+            
             n_iter++;
             sum_factor += 2;
         }
@@ -50,6 +44,12 @@ public class GregoryLeibniz implements Runnable {
 
         Float accuracy = Float.parseFloat(args[0]);
         Integer timeout = Integer.parseInt(args[1]);
+
+        if (accuracy < 0 || accuracy > Math.PI) {
+            System.out.println("Accuracy must be between 0 and pi");
+            System.out.println("Exiting...");
+            return;
+        }
 
         GregoryLeibniz gl = new GregoryLeibniz(accuracy);
 
