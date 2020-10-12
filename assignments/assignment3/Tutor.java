@@ -245,7 +245,7 @@ public class Tutor {
         int pc = 0;
 
         for (int i = 0; i < this.computers.size(); i++) {
-            if (computers.get(i)) 
+            if (!computers.get(i)) 
                 pc = i;
                 break; 
         }
