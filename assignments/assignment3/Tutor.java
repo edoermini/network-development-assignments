@@ -1,7 +1,6 @@
 package assignment3;
 
 import java.security.InvalidParameterException;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.ArrayList;
@@ -37,21 +36,6 @@ public class Tutor {
      */
     private Integer studentsWaiting;
 
-    /**
-     * teachersWaiting lock
-     */
-    private ReentrantLock twLock;
-
-    /**
-     * graduatesWaiting lock
-     */
-    private ReentrantLock gwLock;
-
-    /**
-     * studentsWaiting lock
-     */
-    private ReentrantLock swLock;
-
 
     public Tutor() {
         this.computers = new ArrayList<Boolean>(20);
@@ -69,10 +53,6 @@ public class Tutor {
         this.teachersWaiting = 0;
         this.graduatesWaiting = 0;
         this.studentsWaiting = 0;
-
-        this.twLock = new ReentrantLock();
-        this.gwLock = new ReentrantLock();
-        this.swLock = new ReentrantLock();
     }
 
     /**
@@ -86,24 +66,20 @@ public class Tutor {
         
         int pc = 0;
 
-        swLock.lock();
-        studentsWaiting += 1;
-        swLock.unlock();
-
         labDoor.lock();
+
+        studentsWaiting += 1;
 
         try {
             while (
-                teachersWaiting != 0 || 
-                graduatesWaiting != 0 || 
+                teachersWaiting > 0 || 
+                graduatesWaiting > 0 || 
                 isAllOccupied()
             ) {
                 freePC.await();
             }
 
-            swLock.lock();
             studentsWaiting -= 1;
-            swLock.unlock();
 
             pc = getFreePC();
             setBusy(pc);
@@ -130,24 +106,20 @@ public class Tutor {
         if (pc < 1 || pc > 20) {
             throw new InvalidParameterException("pc must be between 1 and 20");
         }
-        
-        gwLock.lock();
-        graduatesWaiting += 1;
-        gwLock.unlock();
 
         labDoor.lock();
 
+        graduatesWaiting += 1;
+
         try {
             while (
-                teachersWaiting != 0 ||  
+                teachersWaiting > 0 ||  
                 isOccupied(pc-1)
             ) {
                 freePC.await();
             }
 
-            gwLock.lock();
             graduatesWaiting -= 1;
-            gwLock.unlock();
 
             setBusy(pc-1);
             
@@ -164,20 +136,16 @@ public class Tutor {
      */
     public void getLabAccess() {
 
-        twLock.lock();
-        teachersWaiting += 1;
-        twLock.unlock();
-
         labDoor.lock();
+
+        teachersWaiting += 1;
 
         try {
             while (isAllOccupied()) {
                 freePC.await();
             }
 
-            twLock.lock();
             teachersWaiting -= 1;
-            twLock.unlock();
 
             setAllBusy();
             

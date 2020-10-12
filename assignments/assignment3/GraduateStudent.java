@@ -13,14 +13,12 @@ public class GraduateStudent implements Runnable {
     }
 
     public void run() {
-        int pc;
+        /**
+         * choosing lab pc from 1 to 20
+         */
+        int pc = (int)(Math.random() * 20 + 1);
 
         for (int i = 0; i < this.k; i++) {
-
-            /**
-             * choosing lab pc from 1 to 20
-             */
-            pc = (int)(Math.random() * 20 + 1);
 
             System.out.println("(" + Thread.currentThread().getName() + ")\t" + "User: GraduateStudent\t" + " is trying to get access to the lab");
 
