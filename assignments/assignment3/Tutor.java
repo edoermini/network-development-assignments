@@ -74,7 +74,7 @@ public class Tutor {
             while (
                 teachersWaiting > 0 || 
                 graduatesWaiting > 0 || 
-                isAllOccupied()
+                isAllBusy()
             ) {
                 freePC.await();
             }
@@ -114,7 +114,7 @@ public class Tutor {
         try {
             while (
                 teachersWaiting > 0 ||  
-                isOccupied(pc-1)
+                isBusy(pc-1)
             ) {
                 freePC.await();
             }
@@ -141,7 +141,7 @@ public class Tutor {
         teachersWaiting += 1;
 
         try {
-            while (isAllOccupied()) {
+            while (!isAllFree()) {
                 freePC.await();
             }
 
@@ -190,7 +190,7 @@ public class Tutor {
         labDoor.unlock();
     }
 
-    private boolean isAllOccupied() {
+    private boolean isAllBusy() {
         int occupiedPCs = 0;
 
         labDoor.lock();
@@ -205,7 +205,22 @@ public class Tutor {
         return false;
     }
 
-    private boolean isOccupied(int pc) {
+    private boolean isAllFree() {
+        int freePCs = 0;
+
+        labDoor.lock();
+        for (Boolean pc : this.computers) {
+            freePCs += (!pc ? 1 : 0);
+        }
+        labDoor.unlock();
+
+        if (freePCs == this.computers.size()) 
+            return true;
+        
+        return false;
+    }
+
+    private boolean isBusy(int pc) {
         return this.computers.get(pc);
     }
 
