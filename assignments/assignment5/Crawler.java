@@ -8,6 +8,7 @@ public class Crawler {
         if (args.length < 2 || args.length > 2) {
             System.out.println("Usage: Crawler n_consumers path/to/dir");
             System.out.println("Exiting...");
+            return;
         }
 
         Integer k = Integer.valueOf(args[0]);
