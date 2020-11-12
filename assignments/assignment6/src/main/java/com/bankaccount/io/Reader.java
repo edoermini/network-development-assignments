@@ -4,43 +4,60 @@ import com.bankaccount.elements.BankAccount;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.util.Arrays;
 import java.util.List;
 
 public class Reader {
 
-    public static ArrayList<BankAccount> jsonFile2BAs(String fileName) {
-        ArrayList<BankAccount> bas = new ArrayList<>();
-        List<String> lines = new ArrayList<>();
+    public static List<BankAccount> jsonFile2BAs(String fileName) {
+        List<BankAccount> bas = null;
+        String basListString = readFile(fileName);
 
         try {
-            // read all lines
-           lines = Files.readAllLines(Paths.get(fileName));
-
-        } catch (IOException e) {
+            bas = Arrays.asList(new ObjectMapper().readValue(basListString, BankAccount[].class));
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
-        }
-
-        // deserialize all lines in BankAccount objects and put into bas list
-        for (String line : lines) {
-            bas.add(jsonString2ba(line));
         }
 
         return bas;
     }
 
-    public static BankAccount jsonString2ba(String s) {
-        BankAccount ba = null;
+    private static String readFile (String fileName) {
+        StringBuilder builder = new StringBuilder();
+        ReadableByteChannel src = null;
 
+        File file = new File(fileName);
+
+        // creating read channel
         try {
-            ba = new ObjectMapper().readValue(s, BankAccount.class);
-        } catch (JsonProcessingException e) {
+            src = Channels.newChannel(new FileInputStream(file));
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return ba;
+        // creating buffer with same dimension as file
+        ByteBuffer buffer = ByteBuffer.allocateDirect((int)file.length());
+
+        // reading to buffer
+        try {
+            src.read(buffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // sets position to 0
+        buffer.compact();
+
+        while(buffer.hasRemaining()) {
+            builder.append((char)buffer.get());
+        }
+
+        return builder.toString();
     }
 }

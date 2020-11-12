@@ -4,8 +4,8 @@ import com.bankaccount.elements.BankAccount;
 import com.bankaccount.elements.Purpose;
 import com.bankaccount.io.Reader;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +22,7 @@ public class ReaderThread implements Runnable {
     }
 
     public void run() {
-        ArrayList<BankAccount> bas = Reader.jsonFile2BAs(fileName);
+        List<BankAccount> bas = Reader.jsonFile2BAs(fileName);
 
         for (BankAccount ba : bas) {
             pool.execute(new AnalyzerThread(freq, ba));

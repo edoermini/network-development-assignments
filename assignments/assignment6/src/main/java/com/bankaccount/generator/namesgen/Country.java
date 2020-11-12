@@ -5,8 +5,4 @@ public enum Country {
     France,
     Germany,
     UnitedStates,
-    /*
-     * To EXTEND:
-     * remember to change also NameGenerator.getCountryCode method
-     */
 }

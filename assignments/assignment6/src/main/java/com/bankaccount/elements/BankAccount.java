@@ -1,5 +1,7 @@
 package com.bankaccount.elements;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
